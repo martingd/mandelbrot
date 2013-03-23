@@ -16,7 +16,7 @@ class ScreenCoords:
         self.imPixels = int(self.rePixels * aspectRatio)
         
         self.reMinFloat = args.reMinFloat
-        self.imMinFloat = args.imMinFloat
+        self.imMaxFloat = args.imMaxFloat
 
     '''
     Pixel coordinates counting from (0,0) upper left are transformed into
@@ -24,7 +24,7 @@ class ScreenCoords:
     '''
     def complexFromIndex(self, reIndex, imIndex):
         reFloat = ((float(reIndex) / self.rePixels) * self.reRange) + self.reMinFloat
-        imFloat = ((float(imIndex) / self.imPixels) * self.imRange) + self.imMinFloat
+        imFloat = ((float(imIndex) / self.imPixels) * -self.imRange) + self.imMaxFloat
         return reFloat + imFloat*1j
         
 
