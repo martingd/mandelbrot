@@ -63,8 +63,8 @@ def isMandel(c, maxIterations):
 
 def makeColors(args, gammaFunction = None):
     maxIterations = args.maxIterations
-    minBlue = 50
-    maxBlue = 255
+    minBlue = args.colorMin
+    maxBlue = args.colorMax
     rangeBlue = maxBlue - minBlue
     colors = []
     for i in range(0, maxIterations):
@@ -157,6 +157,18 @@ def getArgparser():
                                'accepting a point in the complex plane to be within the set.',
                         type = int,
                         default = 200)
+    parser.add_argument('-c', '--color-min',
+                        dest = 'colorMin',
+                        help = 'The lowest blue color value used for points outside ' +
+                               'the Mandelbrot set. (default is 40)',
+                        type = float,
+                        default = 40)
+    parser.add_argument('-C', '--color-max',
+                        dest = 'colorMax',
+                        help = 'The highest blue color value used for points outside ' +
+                               'the Mandelbrot set. (default is 40)',
+                        type = int,
+                        default = 255)
     return parser
 
 def main(argv=None):
