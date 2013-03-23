@@ -76,9 +76,10 @@ def calculateMandelbrot(args, screenCoords):
 def drawResult(args, screenCoords, mandelbrotResult):
     width  = screenCoords.rePixels
     height = screenCoords.imPixels
+    black = "#000000"
 
     window = Tk()
-    canvas = Canvas(window, width=width, height=height, bg="#000000")
+    canvas = Canvas(window, width=width, height=height, bg=black)
     canvas.pack()
     img = PhotoImage(width=width, height=height)
     canvas.configure(background='white')
@@ -89,7 +90,7 @@ def drawResult(args, screenCoords, mandelbrotResult):
     for y in range(height):
         for x in range(width):
             pixel = mandelbrotResult[y][x]
-            color = "#000000" if pixel == -1 else colors[pixel]
+            color = black if pixel == -1 else colors[pixel]
             img.put(color, (x,y))
     
     mainloop()
