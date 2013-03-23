@@ -5,32 +5,6 @@ import sys
 import argparse
 from tkinter import Tk, Canvas, PhotoImage, mainloop
 
-'''Move these constants to command-line parameters.'''
-
-#reMinFloat = -2.0
-#reMaxFloat =  0.5
-#imMinFloat = -1.0
-#imMaxFloat =  1.0
-
-# Pixels per [0;1[ intervals in any direction
-#resolution = 200
-
-#reMinFloat = -1.0
-#reMaxFloat = -0.5
-#imMinFloat =  0.0
-#imMaxFloat =  0.3
-
-# Pixels per [0;1[ intervals in any direction
-#resolution = 2000
-
-#reMinFloat = -0.752
-#reMaxFloat = -0.742
-#imMinFloat =  0.075
-#imMaxFloat =  0.100
-
-# Pixels per [0;1[ intervals in any direction
-#maxIterations = 255
-
 class ScreenCoords:
     def __init__(self, args):
         self.reRange = args.reMaxFloat - args.reMinFloat
