@@ -3,6 +3,8 @@
 
 import sys
 import argparse
+import colorsys
+import math
 from tkinter import Tk, Canvas, PhotoImage, mainloop
 
 class ScreenCoords:
@@ -35,27 +37,38 @@ def isMandel(c, maxIterations):
     # Exceeded max iterations
     return -1
 
-def makeColors(args, gammaFunction = None):
+def makeColorTable(args, gammaFunction = None):
     maxIterations = args.maxIterations
-    minBlue = args.colorMin
-    maxBlue = args.colorMax
-    rangeBlue = maxBlue - minBlue
+
+    valueMin = args.colorValueMin
+    valueMax = args.colorValueMax
+    valueRange = valueMax - valueMin
+
+    hueMin = args.colorHueMin
+    hueMax = args.colorHueMax
+    hueRange = hueMax - hueMin
+
     colors = []
     for i in range(0, maxIterations):
-        blue = (i * rangeBlue / maxIterations - 1) + minBlue
+        value = (i * valueRange / (maxIterations - 1)) + valueMin
         if gammaFunction:
-            blueNormalized = float(blue)/maxBlue
-            blueNormalizedCorrected = gammaFunction(blueNormalized)
-            blueCorrected = int(blueNormalizedCorrected*maxBlue)
+            valueNormalized = float(value)/valueMax
+            valueNormalizedCorrected = gammaFunction(valueNormalized)
+            valueCorrected = int(valueNormalizedCorrected*valueMax)
         else:
-            blueCorrected = blue
-        colors.append("#0000%02X" % blueCorrected)
+            valueCorrected = value
+
+        hue = (hueRange * i / (maxIterations - 1)) + hueMin
+        if hue > 1.0:
+            # Fold hue into the interval [0;1]
+            hue = math.fmod(hue, 1.0)
+
+        (r,g,b) = colorsys.hsv_to_rgb(hue, 1, valueCorrected)
+        colors.append("#%02X%02X%02X" % (int(r*255), int(g*255), int(b*255)))
     return colors
 
-#colors = makeColors(maxIterations)
-
 # Playing with the color gammacorrection.
-#colors = makeColors(maxIterations, lambda normColor: normColor**2)
+#colors = makeColorTable(maxIterations, lambda normColor: normColor**2)
 
 def calculateMandelbrot(args, screenCoords):
     rePixels = screenCoords.rePixels
@@ -79,13 +92,14 @@ def drawResult(args, screenCoords, mandelbrotResult):
     black = "#000000"
 
     window = Tk()
+    window.wm_title("Mandelbrot")
     canvas = Canvas(window, width=width, height=height, bg=black)
     canvas.pack()
     img = PhotoImage(width=width, height=height)
     canvas.configure(background='white')
     canvas.create_image((width/2, height/2), image=img, state="normal")
     
-    colors = makeColors(args)
+    colors = makeColorTable(args)
 
     for y in range(height):
         for x in range(width):
@@ -132,18 +146,32 @@ def getArgparser():
                                'accepting a point in the complex plane to be within the set.',
                         type = int,
                         default = 200)
-    parser.add_argument('-c', '--color-min',
-                        dest = 'colorMin',
-                        help = 'The lowest blue color value used for points outside ' +
-                               'the Mandelbrot set. (default is 40)',
+    parser.add_argument('-v', '--color-value-min',
+                        dest = 'colorValueMin',
+                        help = 'The HSV value used for points found farthest outside ' +
+                               'the Mandelbrot set. (default is 0.15)',
                         type = float,
-                        default = 40)
-    parser.add_argument('-C', '--color-max',
-                        dest = 'colorMax',
-                        help = 'The highest blue color value used for points outside ' +
-                               'the Mandelbrot set. (default is 40)',
-                        type = int,
-                        default = 255)
+                        default = 0.15)
+    parser.add_argument('-V', '--color-value-max',
+                        dest = 'colorValueMax',
+                        help = 'The HSV value used for points found outside but closest to' +
+                               'the Mandelbrot set. (default is 1.0)',
+                        type = float,
+                        default = 1.0)
+    parser.add_argument('-c', '--color-hue-min',
+                        dest = 'colorHueMin',
+                        help = 'The HSV hue used for points found farthest outside ' +
+                               'the Mandelbrot set. All hue values are folded to ' +
+                               'the interval [0;1]. (default is 0.666... for blue)',
+                        type = float,
+                        default = 2.0/3)
+    parser.add_argument('-C', '--color-hue-max',
+                        dest = 'colorHueMax',
+                        help = 'The HSV hue used for points found outside but closest to' +
+                               'the Mandelbrot set. All hue values are folded to ' +
+                               'the interval [0;1]. (default is 1.5 for cyan)',
+                        type = float,
+                        default = 1.5)
     return parser
 
 def main(argv=None):
