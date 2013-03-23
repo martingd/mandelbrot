@@ -36,33 +36,33 @@ plane and default coloring: blue to cyan through the spectrum:
 
     ./mandelbrot.py
 
-![Default Mandelbrot image](/images/1-default.png)
+![Default Mandelbrot image](/images/1-default.png "Default Mandelbrot image")
 
 Same as above, but cycling backwards from blue towards cyan, so we get no red
 or yellow:
 
     ./mandelbrot.py -C 0.5
 
-![Default Mandelbrot image with blue to cyan colors](/images/2-default-C0.5.png)
+![Default Mandelbrot image with blue to cyan colors](/images/2-default-C0.5.png "Default Mandelbrot image with blue to cyan colors")
 
 Same as above, but cycling through the spectrum 5 times from blue to red and
 then 5 more times to red all the way through:
 
     ./mandelbrot.py -C 5.0
 
-![Default Mandelbrot image with blue to red to red 5 times](/images/3-default-C5.0.png)
+![Default Mandelbrot image with blue to red to red 5 times](/images/3-default-C5.0.png "Default Mandelbrot image with blue to red to red 5 times")
 
 A zoom into the top canyon:
 
     ./mandelbrot.py -x -1.0 -X -0.5 -y 0.0 -Y 0.3
 
-![Mandelbrot top canyon](/images/4-top-canyon.png)
+![Mandelbrot top canyon](/images/4-top-canyon.png "Mandelbrot top canyon")
 
 A deeper zoom into the Seahorse Spiral with default colors:
 
     ./mandelbrot.py -x -0.752 -X -0.742 -y 0.075 -Y 0.100
 
-![Mandelbrot Seahorse Spiral](/images/5-seahorse.png)
+![Mandelbrot Seahorse Spiral](/images/5-seahorse.png "Mandelbrot Seahorse Spiral")
 
 Same with blue to cyan colors:
 
@@ -75,4 +75,4 @@ then 5 more times to red all the way through:
 
     ./mandelbrot.py -x -0.752 -X -0.742 -y 0.075 -Y 0.100 -C 5.0
 
-![Mandelbrot Seahorse Spiral with blue to red to red 5 times](/images/7-seahorse-C5.0.png)
+![Mandelbrot Seahorse Spiral with blue to red to red 5 times](/images/7-seahorse-C5.0.png "Mandelbrot Seahorse Spiral with blue to red to red 5 times")
