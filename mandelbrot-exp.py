@@ -124,23 +124,36 @@ class Usage(Exception):
 def getArgparser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-x', '--real-min',
-                        dest='reMinFloat',
-                        type=float, default=-2.0)
+                        dest = 'reMinFloat',
+                        help = 'The lowest value on the real axis. (default is -2.0)',
+                        type = float,
+                        default = -2.0)
     parser.add_argument('-X', '--real-max',
-                        dest='reMaxFloat',
-                        type=float, default=+0.5)
+                        dest = 'reMaxFloat',
+                        help = 'The highest value on the real axis. (default is +0.5)',
+                        type = float,
+                        default = +0.5)
     parser.add_argument('-y', '--imaginary-min',
-                        dest='imMinFloat',
-                        type=float, default=-1.0)
+                        dest = 'imMinFloat',
+                        help = 'The lowest value on the imaginary axis. (default is -1.0)',
+                        type = float,
+                        default = -1.0)
     parser.add_argument('-Y', '--imaginary-max',
-                        dest='imMaxFloat',
-                        type=float, default=+1.0)
+                        dest = 'imMaxFloat',
+                        help = 'The highest value on the imaginary axis. (default is +1.0)',
+                        type = float,
+                        default = +1.0)
     parser.add_argument('-r', '--resolution',
-                        dest='resolution',
-                        type=int, default=200)
+                        dest = 'resolution',
+                        help = 'The number of pixels corresponding to an interval of [0;1). (default is 200)',
+                        type = int,
+                        default = 200)
     parser.add_argument('-i', '--max-iterations',
-                        dest='maxIterations',
-                        type=int, default=200)
+                        dest = 'maxIterations',
+                        help = 'The maximum number of iterations of the Mandelbrot formula to try before ' +
+                               'accepting a point in the complex plane to be within the set.',
+                        type = int,
+                        default = 200)
     return parser
 
 def main(argv=None):
