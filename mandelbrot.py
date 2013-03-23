@@ -82,7 +82,6 @@ def calculateMandelbrot(args, screenCoords):
             c = screenCoords.complexFromIndex(reIndex, imIndex)
             i = isMandel(c, args.maxIterations)
             reList.append(i)
-            sign = '*' if i == -1 else ' '
     
     return mandelbrotResult
 
