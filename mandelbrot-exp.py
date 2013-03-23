@@ -33,11 +33,24 @@ from tkinter import Tk, Canvas, PhotoImage, mainloop
 
 class ScreenCoords:
     def __init__(self, args):
-        resolution = args.resolution
-        self.reMin = int(args.reMinFloat*resolution)
-        self.reMax = int(args.reMaxFloat*resolution)
-        self.imMin = int(args.imMinFloat*resolution)
-        self.imMax = int(args.imMaxFloat*resolution)
+        self.reRange = args.reMaxFloat - args.reMinFloat
+        self.imRange = args.imMaxFloat - args.imMinFloat
+        aspectRatio = self.imRange / self.reRange
+        self.rePixels = args.rePixels
+        self.imPixels = int(self.rePixels * aspectRatio)
+        
+        self.reMinFloat = args.reMinFloat
+        self.imMinFloat = args.imMinFloat
+
+    '''
+    Pixel coordinates counting from (0,0) upper left are transformed into
+    the corresponding complex number.
+    '''
+    def complexFromIndex(self, reIndex, imIndex):
+        reFloat = ((float(reIndex) / self.rePixels) * self.reRange) + self.reMinFloat
+        imFloat = ((float(imIndex) / self.imPixels) * self.imRange) + self.imMinFloat
+        return reFloat + imFloat*1j
+        
 
 def isMandel(c, maxIterations):
     z = 0
@@ -47,11 +60,6 @@ def isMandel(c, maxIterations):
             return i
     # Exceeded max iterations
     return -1
-
-def complexFromIndex(reIndex, imIndex, resolution):
-    re = float(reIndex)/resolution
-    im = float(imIndex)/resolution
-    return re + im*1j
 
 def makeColors(args, gammaFunction = None):
     maxIterations = args.maxIterations
@@ -76,20 +84,15 @@ def makeColors(args, gammaFunction = None):
 #colors = makeColors(maxIterations, lambda normColor: normColor**2)
 
 def calculateMandelbrot(args, screenCoords):
-    resolution = args.resolution
-
-    reMin = screenCoords.reMin
-    reMax = screenCoords.reMax
-    
-    imMin = screenCoords.imMin
-    imMax = screenCoords.imMax
+    rePixels = screenCoords.rePixels
+    imPixels = screenCoords.imPixels
 
     mandelbrotResult = []
-    for imIndex in range(imMax, imMin-1, -1):
+    for imIndex in range(imPixels):
         reList = []
         mandelbrotResult.append(reList)
-        for reIndex in range(reMin, reMax+1):
-            c = complexFromIndex(reIndex, imIndex, resolution)
+        for reIndex in range(rePixels):
+            c = screenCoords.complexFromIndex(reIndex, imIndex)
             i = isMandel(c, args.maxIterations)
             reList.append(i)
             sign = '*' if i == -1 else ' '
@@ -97,8 +100,8 @@ def calculateMandelbrot(args, screenCoords):
     return mandelbrotResult
 
 def drawResult(args, screenCoords, mandelbrotResult):
-    width  = screenCoords.reMax - screenCoords.reMin + 1
-    height = screenCoords.imMax - screenCoords.imMin + 1
+    width  = screenCoords.rePixels
+    height = screenCoords.imPixels
 
     window = Tk()
     canvas = Canvas(window, width=width, height=height, bg="#000000")
@@ -143,11 +146,11 @@ def getArgparser():
                         help = 'The highest value on the imaginary axis. (default is +1.0)',
                         type = float,
                         default = +1.0)
-    parser.add_argument('-r', '--resolution',
-                        dest = 'resolution',
-                        help = 'The number of pixels corresponding to an interval of [0;1). (default is 200)',
+    parser.add_argument('-p', '--pixels-real',
+                        dest = 'rePixels',
+                        help = 'The number of pixels in the real axis. (default is 500)',
                         type = int,
-                        default = 200)
+                        default = 500)
     parser.add_argument('-i', '--max-iterations',
                         dest = 'maxIterations',
                         help = 'The maximum number of iterations of the Mandelbrot formula to try before ' +
