@@ -23,22 +23,21 @@ from tkinter import Tk, Canvas, PhotoImage, mainloop
 # Pixels per [0;1[ intervals in any direction
 #resolution = 2000
 
-reMinFloat = -0.752
-reMaxFloat = -0.742
-imMinFloat =  0.075
-imMaxFloat =  0.100
+#reMinFloat = -0.752
+#reMaxFloat = -0.742
+#imMinFloat =  0.075
+#imMaxFloat =  0.100
 
 # Pixels per [0;1[ intervals in any direction
-resolution = 3200
+#maxIterations = 255
 
-reMin = int(reMinFloat*resolution)
-reMax = int(reMaxFloat*resolution)
-
-imMin = int(imMinFloat*resolution)
-imMax = int(imMaxFloat*resolution)
-
-maxIterations = 255
-
+class ScreenCoords:
+    def __init__(self, args):
+        resolution = args.resolution
+        self.reMin = int(args.reMinFloat*resolution)
+        self.reMax = int(args.reMaxFloat*resolution)
+        self.imMin = int(args.imMinFloat*resolution)
+        self.imMax = int(args.imMaxFloat*resolution)
 
 def isMandel(c, maxIterations):
     z = 0
@@ -49,18 +48,19 @@ def isMandel(c, maxIterations):
     # Exceeded max iterations
     return -1
 
-def complexFromIndex(reIndex, imIndex):
+def complexFromIndex(reIndex, imIndex, resolution):
     re = float(reIndex)/resolution
     im = float(imIndex)/resolution
     return re + im*1j
 
-def makeColors(number, gammaFunction = None):
+def makeColors(args, gammaFunction = None):
+    maxIterations = args.maxIterations
     minBlue = 50
     maxBlue = 255
     rangeBlue = maxBlue - minBlue
     colors = []
-    for i in range(0,number):
-        blue = (i * rangeBlue / number-1) + minBlue
+    for i in range(0, maxIterations):
+        blue = (i * rangeBlue / maxIterations - 1) + minBlue
         if gammaFunction:
             blueNormalized = float(blue)/maxBlue
             blueNormalizedCorrected = gammaFunction(blueNormalized)
@@ -75,36 +75,42 @@ def makeColors(number, gammaFunction = None):
 # Playing with the color gammacorrection.
 #colors = makeColors(maxIterations, lambda normColor: normColor**2)
 
-def calculateMandelbrot():
+def calculateMandelbrot(args, screenCoords):
+    resolution = args.resolution
+
+    reMin = screenCoords.reMin
+    reMax = screenCoords.reMax
+    
+    imMin = screenCoords.imMin
+    imMax = screenCoords.imMax
+
     mandelbrotResult = []
     for imIndex in range(imMax, imMin-1, -1):
         reList = []
         mandelbrotResult.append(reList)
         for reIndex in range(reMin, reMax+1):
-            c = complexFromIndex(reIndex, imIndex)
-            i = isMandel(c, maxIterations)
+            c = complexFromIndex(reIndex, imIndex, resolution)
+            i = isMandel(c, args.maxIterations)
             reList.append(i)
             sign = '*' if i == -1 else ' '
     
-    print("Done!")
-    print("  height = %d" % len(mandelbrotResult))
-    print("  length = %d" % len(mandelbrotResult[0]))
     return mandelbrotResult
 
-WIDTH, HEIGHT = reMax-reMin+1, imMax-imMin+1
+def drawResult(args, screenCoords, mandelbrotResult):
+    width  = screenCoords.reMax - screenCoords.reMin + 1
+    height = screenCoords.imMax - screenCoords.imMin + 1
 
-def drawResult(mandelbrotResult):
     window = Tk()
-    canvas = Canvas(window, width=WIDTH, height=HEIGHT, bg="#000000")
+    canvas = Canvas(window, width=width, height=height, bg="#000000")
     canvas.pack()
-    img = PhotoImage(width=WIDTH, height=HEIGHT)
+    img = PhotoImage(width=width, height=height)
     canvas.configure(background='white')
-    canvas.create_image((WIDTH/2, HEIGHT/2), image=img, state="normal")
+    canvas.create_image((width/2, height/2), image=img, state="normal")
     
-    colors = makeColors(maxIterations)
+    colors = makeColors(args)
 
-    for y in range(HEIGHT):
-        for x in range(WIDTH):
+    for y in range(height):
+        for x in range(width):
             pixel = mandelbrotResult[y][x]
             color = "#000000" if pixel == -1 else colors[pixel]
             img.put(color, (x,y))
@@ -115,18 +121,41 @@ class Usage(Exception):
     def __init__(self, msg):
         self.msg = msg
 
+def getArgparser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-x', '--real-min',
+                        dest='reMinFloat',
+                        type=float, default=-2.0)
+    parser.add_argument('-X', '--real-max',
+                        dest='reMaxFloat',
+                        type=float, default=+0.5)
+    parser.add_argument('-y', '--imaginary-min',
+                        dest='imMinFloat',
+                        type=float, default=-1.0)
+    parser.add_argument('-Y', '--imaginary-max',
+                        dest='imMaxFloat',
+                        type=float, default=+1.0)
+    parser.add_argument('-r', '--resolution',
+                        dest='resolution',
+                        type=int, default=200)
+    parser.add_argument('-i', '--max-iterations',
+                        dest='maxIterations',
+                        type=int, default=200)
+    return parser
+
 def main(argv=None):
     if argv is None:
         argv = sys.argv[1:]
     try:
         try:
-            argparser = argparse.ArgumentParser()
-            parsedArgs = argparser.parse_args(argv)
+            argParser = getArgparser()
+            parsedArgs = argParser.parse_args(argv)
         except argparse.ArgumentError as msg:
              raise Usage(msg)
 
-        mandelbrotResult = calculateMandelbrot()
-        drawResult(mandelbrotResult)
+        screenCoords = ScreenCoords(parsedArgs)
+        mandelbrotResult = calculateMandelbrot(parsedArgs, screenCoords)
+        drawResult(parsedArgs, screenCoords, mandelbrotResult)
 
     except Usage as err:
         print(err.msg, file=sys.stderr)
