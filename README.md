@@ -26,9 +26,35 @@ when you run the program with the `--help` option:
 
     ./mandelbrot.py --help
 
+There are a lot of options to change both the section of the complex plane
+inspected as well as the colors used for the points outside the Mandelbrot set.
+
 Examples
 --------
-These are examples where we zoom in on some details:
+Mandelbrot as we know it with the program's default section of the complex
+plane and default coloring: blue to cyan through the spectrum:
+
+    ./mandelbrot.py
+
+![Default mandelbrot image](/images/1-default.png)
+
+Same as above, but cycling backwards from blue towards cyan, so we get no red
+or yellow:
+
+    ./mandelbrot.py -C 0.5
+
+Same as above, but cycling through the spectrum 5 times from blue to red and
+then 5 more times to red all the way through:
+
+    ./mandelbrot.py -C 5.0
+
+A zoom into the top canyon:
 
     ./mandelbrot.py -x -1.0 -X -0.5 -y 0.0 -Y 0.3
+
+A deeper zoom into the Seahorse Spiral with default colors, blue->cyan and finally
+blue->red->...5...->red:
+
     ./mandelbrot.py -x -0.752 -X -0.742 -y 0.075 -Y 0.100
+    ./mandelbrot.py -x -0.752 -X -0.742 -y 0.075 -Y 0.100 -C 0.5
+    ./mandelbrot.py -x -0.752 -X -0.742 -y 0.075 -Y 0.100 -C 5.0
