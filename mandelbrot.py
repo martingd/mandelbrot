@@ -1,11 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
 import sys
 import argparse
 import colorsys
 import math
-from tkinter import Tk, Canvas, PhotoImage, mainloop
+from Tkinter import Tk, Canvas, PhotoImage, mainloop
 
 class ScreenCoords:
     def __init__(self, args):
@@ -188,8 +188,8 @@ def main(argv=None):
         drawResult(parsedArgs, screenCoords, mandelbrotResult)
 
     except Usage as err:
-        print(err.msg, file=sys.stderr)
-        print("for help use --help", file=sys.stderr)
+        print >> sys.stderr, err.msg
+        print >> sys.stderr, "for help use --help"
         return 2
 
 if __name__ == "__main__":
